@@ -140,14 +140,12 @@ NB: In general, the fundamental frequency of the complex speech tone – also kn
 ##### <p>Connect us with </p>
 
 
-[<img align="left" alt="Puretalk | LinkedIn" width="30px" src="https://img.icons8.com/color/48/000000/linkedin.png" />][linkedin][<img align="left" alt="Puretalk | Twitter" width="30px" src="https://img.icons8.com/fluent/48/000000/twitter.png" />][twitter][<img align ="left" alt="Sanjaypranav" width="30px" src="https://img.icons8.com/color/48/000000/gmail.png" />][gmail]
 
-
-[linkedin]: https://www.linkedin.com/company/puretalkai/
-[twitter]: https://twitter.com/puretalka
-[gmail]: mailto:info@puretalk.ai
+[linkedin]: coming soon
+[twitter]: coming soon
+[gmail]: mailto:mylifeisweird@mail.com
 <br>
 <br>
-Devoloped by Puretalk@2022 
+Devoloped by Claude P
 <br>
 <!-- <img src="data/img/ruth_g.png" width=50px height='50px'> -->
