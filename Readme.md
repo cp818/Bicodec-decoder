@@ -1,7 +1,7 @@
 <!-- version tag -->
 
  
-RUTH TTS Benchmark, accuracy and voice quality test.
+Bicodec Decoder TTS Benchmark, accuracy and voice quality test.
 ---
 Objective metrics such as the Signal-to-Noise Ratio (SNR), the Mean Opinion Score (MOS), and the Perceptual Evaluation of Speech Quality (PESQ) are used to measure the quality of the audio.
 
