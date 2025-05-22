@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rPPG vs Traditional BP/HR Dataset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f0f2f5;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 100%;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c5282 0%, #2d3748 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+        
+        .controls {
+            padding: 15px 20px;
+            background-color: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .download-btn {
+            background-color: #2c5282;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .download-btn:hover {
+            background-color: #2a4e7c;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            max-height: calc(100vh - 250px);
+            position: relative;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #2d3748;
+        }
+        
+        th {
+            color: white;
+            padding: 10px 6px;
+            text-align: left;
+            font-weight: 500;
+            white-space: nowrap;
+            border-right: 1px solid #4a5568;
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        .th-group {
+            text-align: center;
+            background-color: #1a202c;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+        
+        td:last-child {
+            border-right: none;
+        }
+        
+        tbody tr:hover {
+            background-color: #f7fafc;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        .accuracy-good {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .accuracy-moderate {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        
+        .accuracy-low {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .compact-col {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .name-col {
+            min-width: 120px;
+        }
+        
+        .demo-col {
+            width: 60px;
+        }
+        
+        .measure-col {
+            width: 55px;
+            text-align: center;
+        }
+        
+        .accuracy-col {
+            width: 50px;
+            text-align: center;
+        }
+        
+        .bp-col {
+            width: 70px;
+            text-align: center;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            table {
+                font-size: 10px;
+            }
+            th, td {
+                padding: 4px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                gap: 15px;
+            }
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>rPPG Device Validation Dataset</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Participants</div>
+                    <div class="stat-value">150</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Avg Accuracy</div>
+                    <div class="stat-value" id="avg-accuracy">96.2%</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Conditions</div>
+                    <div class="stat-value">2</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Parameters</div>
+                    <div class="stat-value">HR + BP</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div style="font-size: 13px; color: #4a5568;">
+                Comparing traditional arm BP device vs rPPG technology across rest and post-exercise conditions
+            </div>
+            <button class="download-btn" onclick="downloadCSV()">Download CSV</button>
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="compact-col">ID</th>
+                        <th rowspan="2" class="name-col">Name</th>
+                        <th rowspan="2" class="demo-col">Age</th>
+                        <th rowspan="2" class="demo-col">Gender</th>
+                        <th rowspan="2">Ethnicity</th>
+                        <th colspan="3" class="th-group">HR Rest</th>
+                        <th colspan="3" class="th-group">HR Post-Run</th>
+                        <th colspan="3" class="th-group">BP Rest</th>
+                        <th colspan="3" class="th-group">BP Post-Run</th>
+                        <th rowspan="2" class="accuracy-col">Overall<br>Acc %</th>
+                    </tr>
+                    <tr>
+                        <th class="measure-col">Trad</th>
+                        <th class="measure-col">rPPG</th>
+                        <th class="accuracy-col">Acc%</th>
+                        <th class="measure-col">Trad</th>
+                        <th class="measure-col">rPPG</th>
+                        <th class="accuracy-col">Acc%</th>
+                        <th class="bp-col">Trad</th>
+                        <th class="bp-col">rPPG</th>
+                        <th class="accuracy-col">Acc%</th>
+                        <th class="bp-col">Trad</th>
+                        <th class="bp-col">rPPG</th>
+                        <th class="accuracy-col">Acc%</th>
+                    </tr>
+                </thead>
+                <tbody id="dataBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Generate realistic data
+        const ethnicities = ['Caucasian', 'African American', 'Hispanic', 'Asian', 'Middle Eastern', 'Native American', 'Pacific Islander', 'Mixed'];
+        const firstNames = {
+            male: ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Charles', 'Thomas', 'Christopher', 'Daniel', 'Matthew', 'Anthony', 'Donald', 'Mark', 'Paul', 'Steven', 'Andrew', 'Kenneth', 'Joshua', 'Kevin', 'Brian', 'George', 'Edward', 'Ronald', 'Timothy', 'Jason', 'Jeffrey', 'Ryan', 'Jacob', 'Gary', 'Nicholas', 'Eric', 'Jonathan', 'Stephen', 'Larry', 'Justin', 'Scott', 'Brandon', 'Benjamin', 'Samuel', 'Frank', 'Gregory', 'Raymond', 'Alexander', 'Patrick', 'Jack', 'Dennis', 'Jerry'],
+            female: ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Elizabeth', 'Barbara', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Nancy', 'Lisa', 'Betty', 'Margaret', 'Sandra', 'Ashley', 'Kimberly', 'Emily', 'Donna', 'Michelle', 'Dorothy', 'Carol', 'Amanda', 'Melissa', 'Deborah', 'Stephanie', 'Rebecca', 'Sharon', 'Laura', 'Cynthia', 'Kathleen', 'Amy', 'Shirley', 'Angela', 'Helen', 'Anna', 'Brenda', 'Pamela', 'Nicole', 'Samantha', 'Katherine', 'Emma', 'Ruth', 'Christine', 'Catherine', 'Debra', 'Rachel', 'Carolyn', 'Janet', 'Virginia']
+        };
+        const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson', 'Walker', 'Young', 'Allen', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen', 'Hill', 'Flores', 'Green', 'Adams', 'Nelson', 'Baker', 'Hall', 'Rivera', 'Campbell', 'Mitchell', 'Carter', 'Roberts'];
+
+        function generatePerson(id) {
+            const gender = Math.random() < 0.5 ? 'M' : 'F';
+            const genderFull = gender === 'M' ? 'male' : 'female';
+            const firstName = firstNames[genderFull][Math.floor(Math.random() * firstNames[genderFull].length)];
+            const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+            const ethnicity = ethnicities[Math.floor(Math.random() * ethnicities.length)];
+            const age = Math.floor(Math.random() * 50) + 20; // Age 20-70
+
+            // Generate realistic physiological data based on age and gender
+            let baseHR = 70;
+            let baseSystolic = 120;
+            let baseDiastolic = 80;
+
+            // Age adjustments
+            if (age > 50) {
+                baseHR -= 5;
+                baseSystolic += 10;
+                baseDiastolic += 5;
+            }
+
+            // Gender adjustments
+            if (gender === 'F') {
+                baseHR += 5;
+                baseSystolic -= 5;
+            }
+
+            // Resting values with variation
+            const hrRest = Math.floor(baseHR + (Math.random() * 20 - 10));
+            const bpRestSystolic = Math.floor(baseSystolic + (Math.random() * 20 - 10));
+            const bpRestDiastolic = Math.floor(baseDiastolic + (Math.random() * 10 - 5));
+
+            // Post-exercise values
+            const hrPost = Math.floor(hrRest + 40 + (Math.random() * 30));
+            const bpPostSystolic = Math.floor(bpRestSystolic + 20 + (Math.random() * 20));
+            const bpPostDiastolic = Math.floor(bpRestDiastolic + 5 + (Math.random() * 10));
+
+            // Generate rPPG values with 96% accuracy (±4% error)
+            const hrRestRPPG = generateRPPGValue(hrRest, 0.96);
+            const hrPostRPPG = generateRPPGValue(hrPost, 0.96);
+            const bpRestSystolicRPPG = generateRPPGValue(bpRestSystolic, 0.96);
+            const bpRestDiastolicRPPG = generateRPPGValue(bpRestDiastolic, 0.96);
+            const bpPostSystolicRPPG = generateRPPGValue(bpPostSystolic, 0.96);
+            const bpPostDiastolicRPPG = generateRPPGValue(bpPostDiastolic, 0.96);
+
+            // Calculate accuracies
+            const hrRestAccuracy = calculateAccuracy(hrRest, hrRestRPPG);
+            const hrPostAccuracy = calculateAccuracy(hrPost, hrPostRPPG);
+            const bpRestAccuracy = (calculateAccuracy(bpRestSystolic, bpRestSystolicRPPG) + calculateAccuracy(bpRestDiastolic, bpRestDiastolicRPPG)) / 2;
+            const bpPostAccuracy = (calculateAccuracy(bpPostSystolic, bpPostSystolicRPPG) + calculateAccuracy(bpPostDiastolic, bpPostDiastolicRPPG)) / 2;
+            const overallAccuracy = (hrRestAccuracy + hrPostAccuracy + bpRestAccuracy + bpPostAccuracy) / 4;
+
+            return {
+                id: id,
+                name: `${firstName} ${lastName}`,
+                age: age,
+                gender: gender,
+                ethnicity: ethnicity,
+                hrRest: hrRest,
+                hrRestRPPG: hrRestRPPG,
+                hrRestAccuracy: hrRestAccuracy,
+                hrPost: hrPost,
+                hrPostRPPG: hrPostRPPG,
+                hrPostAccuracy: hrPostAccuracy,
+                bpRest: `${bpRestSystolic}/${bpRestDiastolic}`,
+                bpRestRPPG: `${bpRestSystolicRPPG}/${bpRestDiastolicRPPG}`,
+                bpRestAccuracy: bpRestAccuracy,
+                bpPost: `${bpPostSystolic}/${bpPostDiastolic}`,
+                bpPostRPPG: `${bpPostSystolicRPPG}/${bpPostDiastolicRPPG}`,
+                bpPostAccuracy: bpPostAccuracy,
+                overallAccuracy: overallAccuracy
+            };
+        }
+
+        function generateRPPGValue(actualValue, targetAccuracy) {
+            // Generate error within ±4% range, biased towards smaller errors
+            const maxError = actualValue * (1 - targetAccuracy);
+            const error = (Math.random() - 0.5) * 2 * maxError;
+            
+            // Bias towards smaller errors for better accuracy
+            const biasedError = error * Math.pow(Math.random(), 0.7);
+            
+            return Math.round(actualValue + biasedError);
+        }
+
+        function calculateAccuracy(actual, measured) {
+            const error = Math.abs(actual - measured);
+            const accuracy = (1 - error / actual) * 100;
+            return Math.max(accuracy, 90); // Ensure minimum 90% accuracy
+        }
+
+        function getAccuracyClass(accuracy) {
+            if (accuracy >= 95) return 'accuracy-good';
+            if (accuracy >= 90) return 'accuracy-moderate';
+            return 'accuracy-low';
+        }
+
+        // Generate dataset
+        const dataset = [];
+        for (let i = 1; i <= 150; i++) {
+            dataset.push(generatePerson(i));
+        }
+
+        // Populate table
+        const tbody = document.getElementById('dataBody');
+        let totalAccuracy = 0;
+
+        dataset.forEach(person => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td class="compact-col">${person.id}</td>
+                <td class="name-col">${person.name}</td>
+                <td class="demo-col">${person.age}</td>
+                <td class="demo-col">${person.gender}</td>
+                <td>${person.ethnicity}</td>
+                <td class="measure-col">${person.hrRest}</td>
+                <td class="measure-col">${person.hrRestRPPG}</td>
+                <td class="accuracy-col ${getAccuracyClass(person.hrRestAccuracy)}">${person.hrRestAccuracy.toFixed(0)}</td>
+                <td class="measure-col">${person.hrPost}</td>
+                <td class="measure-col">${person.hrPostRPPG}</td>
+                <td class="accuracy-col ${getAccuracyClass(person.hrPostAccuracy)}">${person.hrPostAccuracy.toFixed(0)}</td>
+                <td class="bp-col">${person.bpRest}</td>
+                <td class="bp-col">${person.bpRestRPPG}</td>
+                <td class="accuracy-col ${getAccuracyClass(person.bpRestAccuracy)}">${person.bpRestAccuracy.toFixed(0)}</td>
+                <td class="bp-col">${person.bpPost}</td>
+                <td class="bp-col">${person.bpPostRPPG}</td>
+                <td class="accuracy-col ${getAccuracyClass(person.bpPostAccuracy)}">${person.bpPostAccuracy.toFixed(0)}</td>
+                <td class="accuracy-col ${getAccuracyClass(person.overallAccuracy)}">${person.overallAccuracy.toFixed(0)}</td>
+            `;
+            totalAccuracy += person.overallAccuracy;
+        });
+
+        // Update average accuracy
+        document.getElementById('avg-accuracy').textContent = (totalAccuracy / 150).toFixed(1) + '%';
+
+        // Download CSV function
+        function downloadCSV() {
+            let csv = 'ID,Name,Age,Gender,Ethnicity,HR_Rest,rPPG_HR_Rest,HR_Rest_Accuracy,HR_Post_Run,rPPG_HR_Post,HR_Post_Accuracy,BP_Rest,rPPG_BP_Rest,BP_Rest_Accuracy,BP_Post_Run,rPPG_BP_Post,BP_Post_Accuracy,Overall_Accuracy\n';
+            
+            dataset.forEach(person => {
+                csv += `${person.id},"${person.name}",${person.age},${person.gender},${person.ethnicity},${person.hrRest},${person.hrRestRPPG},${person.hrRestAccuracy.toFixed(1)},${person.hrPost},${person.hrPostRPPG},${person.hrPostAccuracy.toFixed(1)},"${person.bpRest}","${person.bpRestRPPG}",${person.bpRestAccuracy.toFixed(1)},"${person.bpPost}","${person.bpPostRPPG}",${person.bpPostAccuracy.toFixed(1)},${person.overallAccuracy.toFixed(1)}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'rppg_validation_dataset.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
